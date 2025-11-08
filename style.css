@@ -209,13 +209,19 @@ body {
 
 .Contenedor-Principal-D0 {
   max-width: 1400px;
-  margin: 0 auto;
+  margin: 0 auto; /* Corregido para centrar el contenedor */
   padding: 2rem;
+  /* --- AJUSTE DE ALTURA --- */
+  /* Define la altura mínima del contenedor principal. */
+  min-height: 80vh; /* Ajustado para dar un buen espacio inicial */
 }
 
 .Contenedores-Secundarios-D1 {
   display: grid;
-  grid-template-columns: 300px 1fr 300px;
+  /* Columnas: Izquierda, Centro (flexible), Derecha */
+  grid-template-columns: 340px 1fr 340px;
+  align-items: start; /* Alinea las columnas en la parte superior */
+  position: relative; /* Necesario para posicionar los iconos móviles */
   gap: 2rem;
 }
 
@@ -238,6 +244,9 @@ body {
 }
 
 .Dia-Menu-HeaderD2Sub2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1rem;
   padding-bottom: 1rem;
   border-bottom: 2px solid var(--color-border);
@@ -250,7 +259,8 @@ body {
 }
 
 .Contenido-Menu-del-Dia-D2Sub4 {
-  max-height: 600px;
+  /* Altura máxima para la lista de programación */
+  max-height: 290px; /* Altura para la vista de PC */
   overflow-y: auto;
 }
 
@@ -270,7 +280,6 @@ body {
 
 .Lista-de-Horarios-del-Dia-D2Sub4 .horario-item:hover {
   background: var(--color-bg-card-hover);
-  transform: translateX(5px);
 }
 
 .Lista-de-Horarios-del-Dia-D2Sub4 .horario-item.activo {
@@ -300,10 +309,11 @@ body {
 .Contenedor-Central-de-Reproductor-D3 {
   background: var(--color-bg-card);
   border-radius: 12px;
-  padding: 2rem;
+  padding: 1rem;
   box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
+  align-items: center; /* <-- AÑADIDO: Centra todos los elementos hijos */
   gap: 1.5rem;
 }
 
@@ -323,19 +333,38 @@ body {
 }
 
 #Nombre-de-la-Estacion-D3Sub2-I {
-  font-size: 1.5rem;
+ margin-top: 5px;
+  text-align: center;
+  /* --- AJUSTE DE TAMAÑO Y GROSOR --- */
+  font-size: 1.2rem; /* Aumentado para que sea más grande */
   font-weight: 700;
   color: var(--color-text-primary);
 }
 
+/* Contenedor para el logo y el botón de play */
+.Contenedor-Logo-y-Boton {
+  position: relative; /* Contexto para el posicionamiento del botón */
+  width: 100px; /* Mismo tamaño que el logo */
+  height: 100px; /* Mismo tamaño que el logo */
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 640px) {
+  .Contenedor-Logo-y-Boton {
+    width: 100px;
+    height: 100px;
+  }
+}
+
 .logo-Img-C {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  border-radius: 18%;
   object-fit: cover;
   border: 4px solid var(--color-primary);
   box-shadow: var(--shadow-lg);
   background: var(--color-bg-card);
+  transition: filter 0.3s ease; /* Transición para el efecto de brillo */
   display: none;
 }
 
@@ -344,8 +373,10 @@ body {
 }
 
 #Nombre-Del-Programa-D3Sub3-I {
+  margin-top: -19px;
   font-size: 1.125rem;
   color: var(--color-text-secondary);
+  text-align: center; /* <-- AÑADIDO: Centra el texto del programa */
   font-weight: 500;
 }
 
@@ -358,31 +389,44 @@ body {
 }
 
 #Boton-Play-Pause-D3Sub5 {
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   border-radius: 50%;
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.3s ease;
   box-shadow: var(--shadow-lg);
-  margin-top: 1rem;
+  opacity: 0; /* Oculto por defecto */
+  pointer-events: none; /* No se puede hacer clic por defecto */
+  z-index: 10;
 }
 
-#Boton-Play-Pause-D3Sub5:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+/* Mostrar el botón cuando el cursor está sobre el contenedor del logo */
+.Contenedor-Logo-y-Boton:hover #Boton-Play-Pause-D3Sub5 {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Oscurecer el logo cuando el cursor está encima para dar contraste al botón */
+.Contenedor-Logo-y-Boton:hover .logo-Img-C {
+  filter: brightness(0.5);
 }
 
 #Boton-Play-Pause-D3Sub5 img {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   filter: brightness(0) invert(1);
 }
 
 #Contenedor-Para-Progreso-D3Sub6-I {
+  margin-top: -15px;
   width: 100%;
   padding: 0.5rem 0;
 }
@@ -403,11 +447,8 @@ body {
   border-radius: 10px;
 }
 
-#Contenedor-Siguiente-Evento-D3Sub9-I {
-  padding: 1rem;
-  background: var(--color-bg-dark);
-  border-radius: 8px;
-  border-left: 3px solid var(--color-warning);
+#Contenedor-Siguiente-Evento-D3Sub9-I{
+  margin-top: -15px;
 }
 
 #Titulo-Siguiente-Evento-D3Sub10-I {
@@ -418,6 +459,7 @@ body {
 }
 
 #Detalles-Siguiente-Evento-D3Sub11-I {
+  text-align: center;
   font-size: 1rem;
   color: var(--color-text-secondary);
 }
@@ -560,17 +602,19 @@ body {
   margin: 0;
 }
 
-.menu-estaciones-movil-close {
-  width: 36px;
-  height: 36px;
+/* Estilo genérico para botones de cierre de menús móviles */
+.menu-movil-close {
+  /* Oculto por defecto en la vista de PC */
+  display: none;
   border: none;
   background: transparent;
   color: var(--color-text-primary);
   font-size: 2rem;
   font-weight: 300;
   line-height: 1;
+  width: 36px; /* Añadido para unificar tamaño */
+  height: 36px; /* Añadido para unificar tamaño */
   cursor: pointer;
-  display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
@@ -578,7 +622,7 @@ body {
   padding: 0;
 }
 
-.menu-estaciones-movil-close:hover {
+.menu-movil-close:hover {
   background: var(--color-bg-dark);
   color: var(--color-danger);
   transform: rotate(90deg);
@@ -753,7 +797,7 @@ body {
 /* ------------------------------------------------------ */
 
 footer {
-  margin-top: 3rem;
+
   padding: 2rem;
   background: var(--color-bg-card);
   border-top: 2px solid var(--color-border);
@@ -776,7 +820,7 @@ footer {
 
 @media (max-width: 1200px) {
   .Contenedores-Secundarios-D1 {
-    grid-template-columns: 250px 1fr 250px;
+    grid-template-columns: 280px 1fr 280px; /* Columnas más delgadas para tablets */
     gap: 1.5rem;
   }
 }
@@ -793,13 +837,17 @@ footer {
   }
 
   .Barra-Superior-Movil {
+    /* Posicionamiento absoluto para poner los iconos a los lados */
+    position: absolute;
+    /* --- AJUSTE DE POSICIÓN --- */
+    top: 1.5rem; /* Vertical: Aumenta para bajar, disminuye para subir */
+    left: 0;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
-    background: var(--color-bg-dark);
-    border-radius: 8px;
-    margin-bottom: 1rem;
+    padding: 0 1.5rem; /* Horizontal: Aumenta para alejar de los bordes, disminuye para acercar */
+    z-index: 10; /* Asegura que esté por encima de otros elementos */
   }
 
   .boton-programacion {
@@ -840,13 +888,29 @@ footer {
   .Contenedor-Lateral-Izquierdo-D2.mobile-active {
     display: block;
     position: fixed;
-    top: 80px;
+    top: 0; /* Ajustado para cubrir toda la pantalla desde arriba */
     left: 0;
-    width: 280px;
-    height: calc(100vh - 80px);
+    /* --- AJUSTE DE ANCHO MÓVIL --- */
+    width: 400px; /* Cambia este valor para el ancho del menú */
+    height: 100vh; /* Ajustado para ocupar toda la altura */
     z-index: 300;
     overflow-y: auto;
     border-radius: 0;
+  }
+
+  /* Mostrar el botón de cierre solo en el menú móvil activo */
+  .Contenedor-Lateral-Izquierdo-D2.mobile-active .menu-movil-close {
+    display: flex;
+  }
+
+  /* Mostrar el botón de cierre también en el menú de estaciones activo */
+  .menu-estaciones-movil.active .menu-movil-close {
+    display: flex;
+  }
+
+  .Contenido-Menu-del-Dia-D2Sub4 {
+    /* En móvil, la lista no tiene límite de altura para ocupar el espacio */
+    max-height: none;
   }
 }
 
@@ -868,13 +932,13 @@ footer {
   }
 
   .logo-Img-C {
-    width: 120px;
-    height: 120px;
+    width: 100px; /* Ya es 100px, pero lo dejamos por claridad */
+    height: 100px;
   }
 
   #Boton-Play-Pause-D3Sub5 {
-    width: 70px;
-    height: 70px;
+    width: 60px; /* Mismo tamaño que en PC para consistencia */
+    height: 60px;
   }
 
   #Boton-Play-Pause-D3Sub5 img {
