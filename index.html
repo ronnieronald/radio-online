@@ -11,9 +11,11 @@
     <header class="Contenedor-Header">
       <div class="Contenido-Header-A2">
         <h1 class="Header-Titulo-A1">Radio Online</h1>
+
         <!-- Indicador que muestra si la radio está conectada -->
         <div class="Header-Estado-A5">
           <div class="Indicador-Estado-A6" id="Estado-de-Header-A6-I"></div>
+
           <span class="Texto-Estado-A7" id="Estado-de-Texto-en-Header-A7-I"
             >Conectando...</span
           >
@@ -21,24 +23,39 @@
       </div>
     </header>
 
-    <!-- Pantalla De Carga -->
-    <div id="Precarga">
-      <img
-        src="https://img.icons8.com/ios-filled/100/ffffff/loading.png"
-        alt="Cargando radio..."
-        id="Precarga-Giratoria-B1-I"
-      />
-      <div id="Precarga-Mensaje-B2-I">Cargando radio...</div>
-      <button id="Precarga-Boton-B3-I">Iniciar</button>
-    </div>
-
     <main class="Contenedor-Principal-D0">
       <div class="Contenedores-Secundarios-D1">
+        <!-- BARRA DE ICONOS MÓVIL -->
+        <!-- La movimos aquí para que se posicione sobre todo el contenedor secundario -->
+        <div class="Barra-Superior-Movil">
+          <!-- Botón izquierdo: programación -->
+          <img
+            id="currentDayIndicator"
+            class="boton-programacion"
+            src="https://img.icons8.com/ios/50/overtime--v1.png"
+            alt="Ver programación del día"
+            role="button"
+            tabindex="0"
+          />
+          <!-- Botón derecho: menú hamburguesa -->
+          <div id="menuButton" class="menu-button">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+
         <aside class="Contenedor-Lateral-Izquierdo-D2">
           <!-- MENÚ DEL DÍA -->
           <div id="Menu-Del-Dia-D2Sub1-I" class="Menu-Del-Dia-DSub1-C">
             <div class="Dia-Menu-HeaderD2Sub2">
               <h3 id="Titulo-del-Menu-Dia-D2Sub3">Programación del Día</h3>
+              <!-- Botón de cierre añadido para el menú de programación -->
+              <button
+                id="dayMenuCloseButton"
+                class="menu-movil-close"
+                aria-label="Cerrar menú de programación"
+              >
+                ×
+              </button>
             </div>
             <div class="Contenido-Menu-del-Dia-D2Sub4">
               <div
@@ -50,38 +67,15 @@
         </aside>
 
         <section class="Contenedor-Central-de-Reproductor-D3">
-          <div class="Barra-Superior-Movil">
-            <!-- Botón izquierdo: programación descativo en pcs y activado en version moviles-->
-            <img
-              id="currentDayIndicator"
-              class="boton-programacion"
-              src="https://img.icons8.com/ios/50/overtime--v1.png"
-              alt="Ver programación del día"
-              role="button"
-              tabindex="0"
-            />
-
-            <!-- Botón derecho: menú hamburguesa oculto para pcs, activo en telefonos al tocar muestra estaciones disponibles -->
-            <div id="menuButton" class="menu-button">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-          </div>
-          <!--Logo Emisora-->
-          <div class="Contenedor-de-Emisora-D3Sub1">
-            <div id="Nombre-de-la-Estacion-D3Sub2-I"></div>
+          <div id="Nombre-de-la-Estacion-D3Sub2-I"></div>
+          <!-- Contenedor para el logo y el botón de play -->
+          <div class="Contenedor-Logo-y-Boton">
             <img
               id="Logo-Img-I"
               class="logo-Img-C"
               src=""
               alt="Logo de la estación"
             />
-            <!-- Nombre del programa actual -->
-            <div id="Nombre-Del-Programa-D3Sub3-I"></div>
-            <!-- Estado de conexión (conectado, pausado, etc.) -->
-
-            <!-- Botón de reproducir o pausar -->
             <div id="Boton-Play-Pause-D3Sub5">
               <img
                 id="Icono-Play"
@@ -90,23 +84,19 @@
               />
             </div>
           </div>
+          <!-- Nombre del programa actual -->
+          <div id="Nombre-Del-Programa-D3Sub3-I"></div>
 
-          <!-- Barra de progreso del programa -->
           <div id="Contenedor-Para-Progreso-D3Sub6-I">
             <div id="ContenedorDeProgresoDelPrograma-D3Sub7-I">
               <div id="Barra-de-Progreso-del-Programa-D3Sub8-I"></div>
             </div>
           </div>
-
-          <!-- Muestra el siguiente programa o evento -->
           <div id="Contenedor-Siguiente-Evento-D3Sub9-I">
             <span id="Titulo-Siguiente-Evento-D3Sub10-I">Próximo evento:</span>
             <div id="Detalles-Siguiente-Evento-D3Sub11-I"></div>
           </div>
 
-          <!-- El reproductor de audio invisible que suena en segundo plano -->
-          <audio id="Reproductor-D3Sub12-I" crossorigin="anonymous"></audio>
-          <!-- Texto con los términos y condiciones -->
           <div id="Footer-Contenedor-Central-D3Sub13-I">
             <p>
               Al usar este servicio, aceptas los
@@ -114,7 +104,16 @@
               >.
             </p>
           </div>
+
+          <!-- Barra de progreso del programa -->
+
+          <!-- Muestra el siguiente programa o evento -->
+
+          <!-- El reproductor de audio invisible que suena en segundo plano -->
+          <audio id="Reproductor-D3Sub12-I" crossorigin="anonymous"></audio>
+          <!-- Texto con los términos y condiciones -->
         </section>
+
         <aside class="Contenedor-Lateral-Derecho-D4">
           <div class="Titulo-Versiculo-Del-Dia-D4Sub1">
             <h2>Versículo del Día</h2>
@@ -153,7 +152,7 @@
         <h3>Estaciones Disponibles</h3>
         <button
           id="menuEstacionesClose"
-          class="menu-estaciones-movil-close"
+          class="menu-movil-close"
           aria-label="Cerrar menú"
         >
           ×
