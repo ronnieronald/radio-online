@@ -1,6 +1,17 @@
 // ======================================================
 // 📻 CONFIGURACIÓN DE LA RADIO
 // ======================================================
+const stationWebsites = {
+  "Radio La Unción": "https://radiolauncion.com/",
+  "Radio Vida": "https://radiovidacusco.com/",
+  "Radio Unión Cristiana": "https://zeno.fm/radio/radio-union-cristiana/",
+  "Radio Nueva Luz": "https://radionuevaluzcusco.com/",
+  "Radio DiospySuyana": "https://diospisuyanaradio.com/",
+  "Al Fin Radio": "https://alfinradio.blogspot.com/?m=1",
+  "Radio Poder Celestial": "https://onlineradiobox.com/pe/podercelestial/",
+  "Radio Bethel": "https://www.bethel.fm/",
+  "Radio Nueva Luz Live": "https://radionuevaluzcusco.com/",
+};
 const schedule = [
   {
     startTime: "00:00:00",
@@ -371,6 +382,8 @@ const schedule = [
     station: {
       name: "Al Fin Radio ",
       url: "https://stream-176.zeno.fm/bwxzzkkuhchvv?zt=eyJhbGciOiJIUzI1NiJ9.eyJzdHJlYW0iOiJid3h6emtrdWhjaHZ2IiwiaG9zdCI6InN0cmVhbS0xNzYuemVuby5mbSIsInJ0dGwiOjUsImp0aSI6InhzeU1NX3g4UXN5UTc1S3Y3aHpnaFEiLCJpYXQiOjE3NDY0MTU4NTksImV4cCI6MTc0NjQxNTkxOX0.J89a5kpQ0yYFvIYQ6kawcdU__Tz44n0j3sqPLHV4gVI",
+      name: "Al Fin Radio",
+      url: "https://stream-176.zeno.fm/e97vtkkuhchvv?zt=eyJhbGciOiJIUzI1NiJ9.eyJzdHJlYW0iOiJlOTd2dGtrdWhjaHZ2IiwiaG9zdCI6InN0cmVhbS0xNzYuemVuby5mbSIsInRtIjpmYWxzZSwicnR0bCI6NSwianRpIjoiZExza0NKQzhUakNoc2VYWDJtRy1xQSIsImlhdCI6MTc1Mzg5MjY3MCwiZXhwIjoxNzUzODkyNzMwfQ.GH1WXAOKnIqMSmBGAMp_xlLkaVLpgSHIPQQ3idEbe1Y",
       logo: "/assets/RadioAlFin.jpg"
     },
     programName: "Undifined",
@@ -637,7 +650,7 @@ function updateNextEvent() {
 
   if (nextEventDetails) {
     if (nextEvent) {
-      nextEventDetails.textContent = `${nextEvent.programName} (${nextEvent.startTime.substring(0, 5)})`;
+      nextEventDetails.textContent = `${nextEvent.programName} `;
     } else {
       nextEventDetails.textContent = "No hay más eventos programados.";
     }
