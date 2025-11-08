@@ -891,7 +891,7 @@ footer {
     top: 0; /* Ajustado para cubrir toda la pantalla desde arriba */
     left: 0;
     /* --- AJUSTE DE ANCHO MÓVIL --- */
-    width: 400px; /* Cambia este valor para el ancho del menú */
+    width: 300px; /* Cambia este valor para el ancho del menú */
     height: 100vh; /* Ajustado para ocupar toda la altura */
     z-index: 300;
     overflow-y: auto;
@@ -959,3 +959,4 @@ audio {
 * {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
+
