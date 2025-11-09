@@ -435,6 +435,28 @@ const schedule = [
   },
     {
     startTime: "13:00:00",
+    endTime: "14:00:00",
+    station: {
+      name: "Al Fin Radio",
+      url: "https://stream-176.zeno.fm/bwxzzkkuhchvv?zt=eyJhbGciOiJIUzI1NiJ9.eyJzdHJlYW0iOiJid3h6emtrdWhjaHZ2IiwiaG9zdCI6InN0cmVhbS0xNzYuemVuby5mbSIsInJ0dGwiOjUsImp0aSI6InhzeU1NX3g4UXN5UTc1S3Y3aHpnaFEiLCJpYXQiOjE3NDY0MTU4NTksImV4cCI6MTc0NjQxNTkxOX0.J89a5kpQ0yYFvIYQ6kawcdU__Tz44n0j3sqPLHV4gVI",
+      logo: "/assets/RadioAlFin.jpg"
+    },
+    programName: "Undefined",
+    days: [0],
+  },
+    {
+    startTime: "14:00:00",
+    endTime: "16:00:00",
+    station: {
+      name: "Radio Nueva Luz",
+      url: "https://conectperu.com/8338/stream",
+      logo: "/assets/RadioNuevaLuz.jpg"
+    },
+    programName: "Culto N°3",
+    days: [0],
+  },
+  {
+    startTime: "16:00:00",
     endTime: "20:30:00",
     station: {
       name: "Al Fin Radio",
@@ -1185,3 +1207,4 @@ function sintonizarNow() {
     if (preloader) preloader.classList.remove('hidden');
   }
 });
+
