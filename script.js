@@ -1027,17 +1027,14 @@ function initializeApp() {
 document.addEventListener('DOMContentLoaded', () => {
   const hasUserInteractedBefore = localStorage.getItem(USER_INTERACTION_KEY) === 'true';
 
+  // Esta función SOLO maneja la secuencia VISUAL de la pantalla de carga.
   const initiateLoadingSequence = () => {
     const preloaderMessage = document.getElementById('Precarga-Mensaje-B2-I');
 
-    // 1. Muestra el estado de "Cargando radio..." y prepara la app.
+    // 1. Muestra el estado de "Cargando radio..."
     if (preloader) preloader.classList.add('cargando');
-    initializeApp();
 
-    // 2. Inicia la reproducción de audio lo antes posible.
-    playPause();
-
-    // 3. Secuencia de mensajes en la pantalla de carga
+    // 2. Secuencia de mensajes en la pantalla de carga
     // Fase 1: "Cargando radio..." durante 3 segundos.
     setTimeout(() => {
       // Fase 2: Muestra el nombre del programa actual por 3 segundos.
@@ -1056,22 +1053,22 @@ document.addEventListener('DOMContentLoaded', () => {
   if (hasUserInteractedBefore) {
     // --- VISITAS POSTERIORES ---
     console.log("Usuario ya ha interactuado. Iniciando reproducción automática.");
-    // Aseguramos que la pantalla de carga esté en modo 'cargando' desde el inicio.
-    if (preloader) preloader.classList.add('cargando');
+    initializeApp(); // Prepara la app
+    playPause(); // Inicia la reproducción
     initiateLoadingSequence();
   } else {
     // --- PRIMERA VISITA ---
     console.log("Primera visita. Esperando interacción del usuario.");
+    // Asegurarse de que solo el botón esté visible y nada más se ejecute.
     if (preloader) preloader.classList.remove('cargando');
 
     if (preloaderButton) {
       preloaderButton.addEventListener('click', () => {
-        // 1. Guardar la interacción del usuario.
         localStorage.setItem(USER_INTERACTION_KEY, 'true');
-        // 2. Llamar a playPause() directamente para que actúe como el botón de play principal.
-        //    Esto inicia la reproducción de audio inmediatamente.
-        playPause();
-        // 3. Iniciar la secuencia visual de carga después de que el audio ya está intentando reproducirse.
+        // Al hacer clic, se inicializa todo:
+        initializeApp(); // 1. Prepara la app
+        playPause();     // 2. Inicia la reproducción (esta es la interacción clave)
+        // 3. Inicia la secuencia visual de carga.
         initiateLoadingSequence();
       }, { once: true });
     }
