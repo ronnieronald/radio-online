@@ -1047,27 +1047,55 @@ const initiateLoadingSequence = () => {
   }, 3000); // Mostrar programa después de 3s
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-  const hasUserInteractedBefore = localStorage.getItem(USER_INTERACTION_KEY) === 'true';
+/**
+ * Intenta reproducir el audio para verificar si el navegador permite el autoplay.
+ * Devuelve una promesa que se resuelve a `true` si el autoplay está permitido, o `false` si no.
+ */
+const checkAutoplayPermission = async () => {
+  // Usamos un clon del reproductor para no interferir con el principal
+  const audioCheck = radioPlayer.cloneNode();
+  audioCheck.muted = true; // Es crucial silenciarlo para aumentar las posibilidades de éxito
 
-  if (hasUserInteractedBefore) {
-    // --- VISITAS POSTERIORES ---
+  try {
+    await audioCheck.play();
+    // Si llega aquí, el autoplay funcionó. Lo pausamos inmediatamente.
+    audioCheck.pause();
+    console.log("Verificación de Autoplay: Permitido.");
+    return true;
+  } catch (error) {
+    // Si hay un error (generalmente NotAllowedError), el autoplay está bloqueado.
+    console.warn("Verificación de Autoplay: Bloqueado por el navegador.", error.name);
+    return false;
+  }
+};
+
+document.addEventListener('DOMContentLoaded', async () => {
+  // Verificamos si el usuario ya ha interactuado en una visita anterior.
+  const hasInteracted = localStorage.getItem(USER_INTERACTION_KEY) === 'true';
+
+  if (hasInteracted) {
+    // Si ya interactuó, iniciamos la app y la secuencia de carga automáticamente.
     console.log("Usuario ya ha interactuado. Iniciando reproducción automática.");
-    initializeApp(); // 1. Inicializa la lógica de la app (eventos, listas, etc.)
-    playPause();     // 2. Inicia la reproducción de audio.
+    initializeApp(); // Inicializa la lógica de la app
+    playPause();     // Inicia la reproducción
     initiateLoadingSequence();
   } else {
-    // --- PRIMERA VISITA ---
-    console.log("Primera visita. Esperando interacción del usuario.");
-    // Aseguramos que la pantalla de carga NO esté en modo 'cargando'. Solo se verá el botón.
-    if (preloader) preloader.classList.remove('cargando');
+    // Es la primera visita. Verificamos si el autoplay está permitido.
+    const canAutoplay = await checkAutoplayPermission();
 
-    if (preloaderButton) {
-      preloaderButton.addEventListener('click', () => {
+    if (canAutoplay) {
+      console.log("Autoplay permitido en la primera visita. Iniciando automáticamente.");
+      localStorage.setItem(USER_INTERACTION_KEY, 'true'); // Marcamos como interactuado
+      initializeApp();
+      playPause();
+      initiateLoadingSequence();
+    } else {
+      console.log("Autoplay bloqueado. Mostrando botón 'Sintonizar' para interacción.");
+      if (preloader) preloader.classList.remove('cargando'); // Asegura que solo se vea el botón
+      preloaderButton?.addEventListener('click', () => {
         localStorage.setItem(USER_INTERACTION_KEY, 'true');
-        // SOLO DESPUÉS DEL CLIC, se inicializa todo.
-        initializeApp(); // 1. Inicializa la lógica de la app.
-        playPause();     // 2. Inicia la reproducción (esta es la interacción clave).
+        initializeApp();
+        playPause();
         initiateLoadingSequence();
       }, { once: true });
     }
