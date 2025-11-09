@@ -261,9 +261,16 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid var(--color-border);
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  background: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  width: 100%;
+  margin: 0;
 }
 
 .Dia-Menu-HeaderD2Sub2 h3 {
@@ -276,6 +283,15 @@ body {
   /* Altura máxima para la lista de programación */
   max-height: 290px; /* Altura para la vista de PC */
   overflow-y: auto;
+  padding: 1.5rem;
+}
+
+@media (max-width: 968px) {
+  .Contenido-Menu-del-Dia-D2Sub4 {
+    max-height: none;
+    flex-grow: 1;
+    padding: 1rem;
+  }
 }
 
 .Lista-de-Horarios-del-Dia-D2Sub4 {
@@ -587,16 +603,15 @@ body {
   position: fixed;
   top: 0;
   right: -100%;
-  width: 320px;
+  width: 300px;
   height: 100vh;
   background: var(--color-bg-card);
   z-index: 400;
   box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
-  transition: right 0.3s ease;
-  overflow-y: auto;
-  padding: 2rem 1.5rem;
   transition: right 0.4s ease;
-  /* Usamos flexbox para separar el header del contenido */
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
 }
@@ -610,9 +625,17 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 1rem; /* Espacio debajo del título */
-  margin-bottom: 1rem;
-  border-bottom: 2px solid var(--color-border);
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  background: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  width: 100%;
+  margin: 0;
+  flex-shrink: 0;
 }
 
 .menu-estaciones-movil-header h3 {
@@ -655,11 +678,11 @@ body {
 .menu-estaciones-movil-content {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
   gap: 1rem;
-  padding: 0 1.5rem 2rem 1.5rem;
-  overflow-y: auto; /* <-- AÑADIDO: El scroll va aquí */
-  flex-grow: 1; /* <-- AÑADIDO: Ocupa el espacio restante */
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex-grow: 1;
+  height: calc(100vh - 76px); /* Altura total menos el header */
 }
 
 .menu-estaciones-movil-item {
@@ -914,19 +937,18 @@ footer {
   .Contenedor-Lateral-Izquierdo-D2.mobile-active {
     display: block;
     position: fixed;
-    top: 0; /* Ajustado para cubrir toda la pantalla desde arriba */
     top: 0;
     left: 0;
-    /* --- AJUSTE DE ANCHO MÓVIL --- */
-    width: 300px; /* Ajustado para un mejor ancho en móviles */
-    width: 300px; /* Ajustado para un mejor ancho en móviles */
-    height: 100vh; /* Ajustado para ocupar toda la altura */
+    width: 300px;
+    height: 100vh;
     z-index: 300;
     overflow-y: auto;
     border-radius: 0;
+    padding: 0; /* Eliminamos el padding por defecto */
+    margin: 0; /* Eliminamos cualquier margen */
+    background: var(--color-bg-card); /* Aseguramos que el fondo cubra todo */
     
     /* --- AJUSTE PARA HEADER FIJO --- */
-    /* Usamos flexbox para separar el header del contenido */
     display: flex;
     flex-direction: column;
   }
