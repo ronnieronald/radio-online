@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
-    <title>Radio Online</title>
+    <title>RadioAutomatico</title>
   </head>
   <body>
     <header class="Contenedor-Header">
@@ -23,17 +23,11 @@
       </div>
     </header>
 
-
-
-    <!-- Pantalla De Carga -->
+    <!-- Pantalla De Carga (precarga) -->
     <div id="Precarga">
-      <img
-        src="https://img.icons8.com/ios-filled/100/ffffff/loading.png"
-        alt="Cargando radio..."
-        id="Precarga-Giratoria-B1-I"
-      />
-      <div id="Precarga-Mensaje-B2-I">Cargando radio...</div>
-      <button id="Precarga-Boton-B3-I">Sintonizar programación actual</button>
+      <div style="display: flex; gap: 0.5rem; margin-top: 1rem">
+        <button id="Precarga-Boton-B3-I" onclick="startNow()">Sintonizar Programa Actual</button>
+      </div>
     </div>
 
     <main class="Contenedor-Principal-D0">
@@ -49,7 +43,6 @@
             alt="Ver programación del día"
             role="button"
             tabindex="0"
-            
           />
           <!-- Botón derecho: menú hamburguesa -->
           <div id="menuButton" class="menu-button">
@@ -185,4 +178,3 @@
     <script src="script.js"></script>
   </body>
 </html>
-
