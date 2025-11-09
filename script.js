@@ -510,6 +510,7 @@ const pcStationsContainer = document.querySelector(".logos-estaciones");
 // --- Pantalla de Carga ---
 const preloader = document.getElementById("Precarga");
 const preloaderButton = document.getElementById("Precarga-Boton-B3-I");
+const sintonizarButton = document.getElementById("Precarga-Sintonizar-B4-I");
 
 
 // ======================================================
@@ -1070,34 +1071,117 @@ const checkAutoplayPermission = async () => {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Verificamos si el usuario ya ha interactuado en una visita anterior.
-  const hasInteracted = localStorage.getItem(USER_INTERACTION_KEY) === 'true';
+  // Inicializar la UI
+  initializeApp();
 
-  if (hasInteracted) {
-    // Si ya interactuó, iniciamos la app y la secuencia de carga automáticamente.
-    console.log("Usuario ya ha interactuado. Iniciando reproducción automática.");
-    initializeApp(); // Inicializa la lógica de la app
-    playPause();     // Inicia la reproducción
-    initiateLoadingSequence();
-  } else {
-    // Es la primera visita. Verificamos si el autoplay está permitido.
-    const canAutoplay = await checkAutoplayPermission();
-
-    if (canAutoplay) {
-      console.log("Autoplay permitido en la primera visita. Iniciando automáticamente.");
-      localStorage.setItem(USER_INTERACTION_KEY, 'true'); // Marcamos como interactuado
-      initializeApp();
-      playPause();
-      initiateLoadingSequence();
-    } else {
-      console.log("Autoplay bloqueado. Mostrando botón 'Sintonizar' para interacción.");
-      if (preloader) preloader.classList.remove('cargando'); // Asegura que solo se vea el botón
-      preloaderButton?.addEventListener('click', () => {
-        localStorage.setItem(USER_INTERACTION_KEY, 'true');
-        initializeApp();
-        playPause();
-        initiateLoadingSequence();
-      }, { once: true });
+  // Click en el botón genérico "Iniciar"
+  preloaderButton?.addEventListener('click', () => {
+    if (preloader) preloader.classList.add('hidden');
+    isUserInteraction = true;
+    pausedManually = false;
+    const scheduled = getScheduledStation();
+    const stationToPlay = scheduled ? scheduled.station : schedule[0]?.station;
+    if (stationToPlay) {
+      playStation(stationToPlay, true);
+      updateMediaSession(stationToPlay, scheduled?.programName || '');
     }
+  }, { once: true });
+
+  // Click en el botón específico "Sintonizar programación actual"
+  sintonizarButton?.addEventListener('click', () => {
+    if (preloader) preloader.classList.add('hidden');
+    isUserInteraction = true;
+    pausedManually = false;
+    const scheduled = getScheduledStation();
+    const stationToPlay = scheduled ? scheduled.station : schedule[0]?.station;
+    if (stationToPlay) {
+      playStation(stationToPlay, true);
+      updateMediaSession(stationToPlay, scheduled?.programName || '');
+    }
+  }, { once: true });
+
+// Funciones globales de respaldo (se pueden llamar desde onclick en el HTML)
+function startNow() {
+  console.log('startNow() llamado');
+  // Mostrar preloader en modo cargando
+  if (preloader) {
+    preloader.classList.remove('hidden');
+    preloader.classList.add('cargando');
+  }
+  isUserInteraction = true;
+  pausedManually = false;
+  if (connectionStatusElement) connectionStatusElement.textContent = 'Intentando reproducir...';
+  const preloaderMessage = document.getElementById('Precarga-Mensaje-B2-I');
+  if (preloaderMessage) {
+    preloaderMessage.style.display = 'block';
+    preloaderMessage.innerHTML = 'Cargando radio.....';
+  }
+
+  const scheduled = getScheduledStation();
+  const stationToPlay = scheduled ? scheduled.station : schedule[0]?.station;
+  if (stationToPlay) {
+    // Intentar reproducir inmediatamente (en contexto de interacción)
+    playStation(stationToPlay, true);
+    updateMediaSession(stationToPlay, scheduled?.programName || '');
+  } else {
+    console.warn('No hay estación para reproducir en startNow()');
+  }
+
+  // Después de 3s mostrar programación actual (si existe) durante 4s y luego ocultar preloader
+  setTimeout(() => {
+    const current = getScheduledStation();
+    if (preloaderMessage) {
+      if (current && current.station) {
+        preloaderMessage.innerHTML = `${current.station.name} - ${current.programName}`;
+      } else if (stationToPlay) {
+        preloaderMessage.innerHTML = `${stationToPlay.name} - Reproduciendo`;
+      } else {
+        preloaderMessage.innerHTML = 'Reproduciendo...';
+      }
+    }
+
+    // Mostrar por 4 segundos y luego ocultar
+    setTimeout(() => {
+      if (preloader) {
+        preloader.classList.remove('cargando');
+        preloader.classList.add('hidden');
+      }
+      if (preloaderMessage) preloaderMessage.style.display = 'none';
+      if (connectionStatusElement) connectionStatusElement.textContent = isPlaying ? 'Reproduciendo' : 'Listo';
+    }, 4000);
+  }, 3000);
+}
+
+function sintonizarNow() {
+  console.log('sintonizarNow() llamado');
+  if (preloader) preloader.classList.add('hidden');
+  isUserInteraction = true;
+  pausedManually = false;
+  if (connectionStatusElement) connectionStatusElement.textContent = 'Intentando reproducir...';
+  const preloaderMessage = document.getElementById('Precarga-Mensaje-B2-I');
+  if (preloaderMessage) preloaderMessage.innerHTML = 'Sintonizando...';
+  const scheduled = getScheduledStation();
+  const stationToPlay = scheduled ? scheduled.station : schedule[0]?.station;
+  if (stationToPlay) {
+    playStation(stationToPlay, true);
+    updateMediaSession(stationToPlay, scheduled?.programName || '');
+  } else {
+    console.warn('No hay estación para reproducir en sintonizarNow()');
+  }
+}
+
+  // Si el navegador permite autoplay, ocultamos el preloader y reproducimos automáticamente
+  const autoplayAllowed = await checkAutoplayPermission().catch(() => false);
+  if (autoplayAllowed) {
+    const scheduled = getScheduledStation();
+    const stationToPlay = scheduled ? scheduled.station : schedule[0]?.station;
+    if (stationToPlay && !isUserInteraction) {
+      playStation(stationToPlay, false);
+      updateMediaSession(stationToPlay, scheduled?.programName || '');
+    }
+    if (preloader) preloader.classList.add('hidden');
+  } else {
+    // Si no se permite autoplay, dejamos visible el preloader hasta que el usuario haga clic
+    if (preloader) preloader.classList.remove('hidden');
   }
 });
