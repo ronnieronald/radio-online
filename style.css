@@ -165,6 +165,19 @@ body {
   transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
+/* --- ESTADOS DE PRECARGA --- */
+/* Por defecto, el mensaje está oculto y el botón visible */
+#Precarga-Mensaje-B2-I { display: none; }
+#Precarga-Boton-B3-I { display: block; }
+
+/* Cuando la precarga está en modo 'cargando' (después del clic o en visitas posteriores) */
+#Precarga.cargando #Precarga-Mensaje-B2-I { display: block; }
+#Precarga.cargando #Precarga-Boton-B3-I { display: none; }
+
+/* Ocultar el icono de carga si no estamos en modo 'cargando' (solo se ve el botón inicial) */
+#Precarga:not(.cargando) #Precarga-Giratoria-B1-I { display: none; }
+
+
 #Precarga-Giratoria-B1-I {
   width: 80px;
   height: 80px;
@@ -183,6 +196,7 @@ body {
 #Precarga-Mensaje-B2-I {
   font-size: 1.25rem;
   color: var(--color-text-secondary);
+  text-align: center;
 }
 
 #Precarga-Boton-B3-I {
@@ -220,6 +234,7 @@ body {
   display: grid;
   /* Columnas: Izquierda, Centro (flexible), Derecha */
   grid-template-columns: 340px 1fr 340px;
+  grid-template-columns: 320px 1fr 340px;
   align-items: start; /* Alinea las columnas en la parte superior */
   position: relative; /* Necesario para posicionar los iconos móviles */
   gap: 2rem;
@@ -397,13 +412,14 @@ body {
   transform: translate(-50%, -50%);
   border-radius: 50%;
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  background: rgba(30, 41, 59, 0.7); /* Fondo gris oscuro semi-transparente */
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: var(--shadow-lg);
-  opacity: 0; /* Oculto por defecto */
+
   pointer-events: none; /* No se puede hacer clic por defecto */
   z-index: 10;
 }
@@ -580,6 +596,10 @@ body {
   transition: right 0.3s ease;
   overflow-y: auto;
   padding: 2rem 1.5rem;
+  transition: right 0.4s ease;
+  /* Usamos flexbox para separar el header del contenido */
+  display: flex;
+  flex-direction: column;
 }
 
 .menu-estaciones-movil.active {
@@ -593,6 +613,8 @@ body {
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
+  padding: 2rem 1.5rem 1rem 1.5rem;
+  margin-bottom: 1rem;
   border-bottom: 2px solid var(--color-border);
 }
 
@@ -637,6 +659,10 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  gap: 1rem;
+  padding: 0 1.5rem 2rem 1.5rem;
+  overflow-y: auto; /* <-- AÑADIDO: El scroll va aquí */
+  flex-grow: 1; /* <-- AÑADIDO: Ocupa el espacio restante */
 }
 
 .menu-estaciones-movil-item {
@@ -852,8 +878,10 @@ footer {
   }
 
   .boton-programacion {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
+    width: 28px;
+    height: 28px;
     cursor: pointer;
     transition: var(--transition);
   }
@@ -890,13 +918,25 @@ footer {
     display: block;
     position: fixed;
     top: 0; /* Ajustado para cubrir toda la pantalla desde arriba */
+    top: 0;
     left: 0;
     /* --- AJUSTE DE ANCHO MÓVIL --- */
-    width: 300px; /* Cambia este valor para el ancho del menú */
+    width: 300px; /* Ajustado para un mejor ancho en móviles */
+    width: 300px; /* Ajustado para un mejor ancho en móviles */
     height: 100vh; /* Ajustado para ocupar toda la altura */
     z-index: 300;
     overflow-y: auto;
     border-radius: 0;
+    
+    /* --- AJUSTE PARA HEADER FIJO --- */
+    /* Usamos flexbox para separar el header del contenido */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .Contenedor-Lateral-Izquierdo-D2.mobile-active .Dia-Menu-HeaderD2Sub2 {
+    /* Hacemos que el header no se encoja */
+    flex-shrink: 0;
   }
 
   /* Mostrar el botón de cierre solo en el menú móvil activo */
@@ -911,7 +951,10 @@ footer {
 
   .Contenido-Menu-del-Dia-D2Sub4 {
     /* En móvil, la lista no tiene límite de altura para ocupar el espacio */
+    /* Hacemos que la lista ocupe el espacio restante y tenga su propio scroll */
     max-height: none;
+    flex-grow: 1;
+    overflow-y: auto;
   }
 }
 
@@ -960,5 +1003,3 @@ audio {
 * {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
-
-
