@@ -246,7 +246,7 @@ body {
 .Contenedor-Lateral-Izquierdo-D2 {
   background: var(--color-bg-card);
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 1rem;
   box-shadow: var(--shadow-md);
   height: fit-content;
   position: sticky;
@@ -261,7 +261,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
+  padding: 1rem;
   border-bottom: 1px solid var(--color-border);
   background: rgba(30, 41, 59, 0.95);
   backdrop-filter: blur(8px);
@@ -1016,6 +1016,18 @@ footer {
 
 audio {
   display: none;
+}
+
+/* Animación de parpadeo para advertencias */
+.blinking-warning {
+  color: var(--color-danger) !important; /* Usamos !important para asegurar que sobreescriba otros estilos */
+  animation: blink 1s linear infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.2;
+  }
 }
 
 /* Animaciones suaves */
