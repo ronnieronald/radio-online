@@ -1,6 +1,6 @@
 // ======================================================
-// 📻 CONFIGURACIÓN DE LA RADIO
-// ======================================================
+
+// --- Sitios Web de las Estaciones ---
 const stationWebsites = {
   "Radio La Unción": "https://radiolauncion.com/",
   "Radio Vida": "https://radiovidacusco.com/",
@@ -10,8 +10,8 @@ const stationWebsites = {
   "Al Fin Radio": "https://alfinradio.blogspot.com/?m=1",
   "Radio Poder Celestial": "https://onlineradiobox.com/pe/podercelestial/",
   "Radio Bethel": "https://www.bethel.fm/",
-  "Radio Nueva Luz Live": "https://radionuevaluzcusco.com/",
 };
+
 const schedule = [
   {
     startTime: "00:00:00",
@@ -495,6 +495,7 @@ const scheduleListContainer = document.getElementById("Lista-de-Horarios-del-Dia
 const dayMenuContainer = document.querySelector(".Contenedor-Lateral-Izquierdo-D2");
 const dayMenuOverlay = document.getElementById("dayMenuOverlay-D5-I");
 const dayMenuButton = document.getElementById("currentDayIndicator"); // Botón en barra móvil
+const dayMenuCloseButton = document.getElementById("dayMenuCloseButton"); // Botón de cierre del menú de día
 
 // --- Menú de Estaciones (Móvil) ---
 const stationsMenuButton = document.getElementById("menuButton");
@@ -516,7 +517,10 @@ const preloaderButton = document.getElementById("Precarga-Boton-B3-I");
 // ======================================================
 let pausedManually = false; // Controla si la pausa fue iniciada manualmente por el usuario
 let currentStation = null; // Guarda la estación que está sonando o debería sonar
+const USER_INTERACTION_KEY = 'radioUserHasInteracted'; // Clave para localStorage
 let isUserInteraction = false; // Bandera para saber si el usuario ha interactuado
+let lastActiveProgramName = null; // Guarda el nombre del último programa activo para evitar scrolls innecesarios
+let todaySchedule = []; // Guarda la programación filtrada para el día actual
 
 // ======================================================
 // 🛠️ FUNCIONES AUXILIARES
@@ -775,7 +779,7 @@ function checkSchedule() {
   }
 
   updateNextEvent();
-  updateScheduleList();
+  updateActiveProgramInList(); // <-- CAMBIO: Ya no reconstruimos, solo actualizamos la clase 'activo'.
 }
 
 // ======================================================
@@ -796,7 +800,10 @@ function loadStationLists() {
   if (stationsMenuList) stationsMenuList.innerHTML = '';
   if (pcStationsContainer) pcStationsContainer.innerHTML = '';
 
-  uniqueStations.forEach(station => {
+  uniqueStations.forEach((station, stationName) => {
+    // Buscamos la URL del sitio web en el objeto stationWebsites
+    const websiteUrl = stationWebsites[stationName];
+
     // --- Menú móvil ---
     if (stationsMenuList) {
       const menuItem = document.createElement('div');
@@ -805,19 +812,21 @@ function loadStationLists() {
         <img src="${station.logo}" alt="Logo de ${station.name}">
         <div class="menu-estaciones-movil-item-info">
           <h4>${station.name}</h4>
-          <p>Toca para visitar</p>
+          <p>${websiteUrl ? 'Toca para visitar' : 'Sitio no disponible'}</p>
         </div>`;
       menuItem.onclick = () => {
-        window.open(station.website, '_blank');
-        toggleStationsMenu(false);
+        if (websiteUrl) {
+          window.open(websiteUrl, '_blank');
+          toggleStationsMenu(false);
+        }
       };
       stationsMenuList.appendChild(menuItem);
     }
 
     // --- Vista de PC ---
-    if (pcStationsContainer) {
+    if (pcStationsContainer && websiteUrl) {
       const pcItem = document.createElement('a');
-      pcItem.href = station.website;
+      pcItem.href = websiteUrl;
       pcItem.target = '_blank';
       pcItem.innerHTML = `<img src="${station.logo}" alt="${station.name}" title="${station.name}">`;
       pcStationsContainer.appendChild(pcItem);
@@ -826,17 +835,18 @@ function loadStationLists() {
 }
 
 /**
- * Actualiza la lista de programación del día.
+ * Dibuja la lista de programación del día. Se llama solo cuando es necesario (al inicio o a medianoche).
  */
-function updateScheduleList() {
+function renderDaySchedule() {
   if (!scheduleListContainer) return;
 
+  console.log("Renderizando la lista de programación del día..."); // Para depuración
   scheduleListContainer.innerHTML = '';
   const now = new Date();
   const currentDay = now.getDay();
   const currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
-  const todaySchedule = schedule
+  todaySchedule = schedule // <-- CAMBIO: Asignamos a la variable global
     .filter(s => s.days.includes(currentDay))
     .sort((a, b) => timeToSeconds(a.startTime) - timeToSeconds(b.startTime));
 
@@ -861,6 +871,56 @@ function updateScheduleList() {
 }
 
 /**
+ * Actualiza qué programa está 'activo' en la lista sin redibujar todo.
+ * Esta función es ligera y se puede llamar cada segundo.
+ */
+function updateActiveProgramInList() {
+  if (!scheduleListContainer) return;
+
+  const now = new Date();
+  const currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+  const items = scheduleListContainer.querySelectorAll('.horario-item');
+  let activeProgramFound = false;
+
+  items.forEach((item, index) => {
+    const program = todaySchedule[index]; // Asumimos que el orden es el mismo
+    if (!program) return;
+
+    const startSeconds = timeToSeconds(program.startTime);
+    const endSeconds = timeToSeconds(program.endTime);
+    const shouldBeActive = currentSeconds >= startSeconds && currentSeconds < endSeconds;
+    item.classList.toggle('activo', shouldBeActive);
+  });
+
+  // --- LÓGICA DE ENFOQUE AUTOMÁTICO ---
+  const activeProgram = todaySchedule.find(p => {
+    const startSeconds = timeToSeconds(p.startTime);
+    const endSeconds = timeToSeconds(p.endTime);
+    return currentSeconds >= startSeconds && currentSeconds < endSeconds;
+  });
+
+  if (activeProgram && activeProgram.programName !== lastActiveProgramName) {
+    const currentProgramElement = scheduleListContainer.querySelector('.horario-item.activo');
+    if (currentProgramElement) {
+      currentProgramElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    lastActiveProgramName = activeProgram.programName;
+  }
+}
+
+/**
+ * Desplaza la vista al programa activo actual en la lista de programación.
+ * Ideal para usar cuando se abre el menú en móviles.
+ */
+function scrollToActiveProgram() {
+  const currentProgramElement = scheduleListContainer.querySelector('.horario-item.activo');
+  if (currentProgramElement) {
+    currentProgramElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+/**
  * Muestra u oculta el menú de programación del día (móvil).
  * @param {boolean} show - True para mostrar, false para ocultar.
  */
@@ -868,6 +928,12 @@ function toggleDayMenu(show) {
   if (dayMenuContainer && dayMenuOverlay) {
     dayMenuContainer.classList.toggle('mobile-active', show);
     dayMenuOverlay.classList.toggle('active', show);
+    // Añade o quita la clase al body para bloquear el scroll de fondo
+    document.body.classList.toggle('menu-abierto', show);
+    // Si estamos mostrando el menú, enfocamos el programa activo.
+    if (show) {
+      scrollToActiveProgram();
+    }
   }
 }
 
@@ -879,6 +945,8 @@ function toggleStationsMenu(show) {
   if (stationsMenuContainer && stationsMenuOverlay && stationsMenuButton) {
     stationsMenuContainer.classList.toggle('active', show);
     stationsMenuOverlay.classList.toggle('active', show);
+    // Añade o quita la clase al body para bloquear el scroll de fondo
+    document.body.classList.toggle('menu-abierto', show);
     stationsMenuButton.classList.toggle('active', show);
   }
 }
@@ -914,12 +982,14 @@ function initializeApp() {
   // --- Configurar Eventos de Menús Móviles ---
   if (dayMenuButton) dayMenuButton.addEventListener('click', () => toggleDayMenu(true));
   if (dayMenuOverlay) dayMenuOverlay.addEventListener('click', () => toggleDayMenu(false));
+  if (dayMenuCloseButton) dayMenuCloseButton.addEventListener('click', () => toggleDayMenu(false));
 
   if (stationsMenuButton) stationsMenuButton.addEventListener('click', () => toggleStationsMenu(true));
   if (stationsMenuOverlay) stationsMenuOverlay.addEventListener('click', () => toggleStationsMenu(false));
   if (stationsMenuCloseButton) stationsMenuCloseButton.addEventListener('click', () => toggleStationsMenu(false));
 
   // --- Cargar contenido dinámico ---
+  renderDaySchedule(); // <-- CAMBIO: Dibujamos la lista una vez al inicio.
   loadStationLists();
 
   // --- Iniciar bucle principal y primera verificación ---
@@ -927,8 +997,25 @@ function initializeApp() {
   setInterval(checkSchedule, 1000); // Verificar cada segundo
 
   // --- Eventos de red y visibilidad ---
-  window.addEventListener('online', updateConnectionStatus);
-  window.addEventListener('offline', updateConnectionStatus);
+  window.addEventListener('online', () => {
+    console.log("Conexión a red recuperada.");
+    updateConnectionStatus();
+    // Si no estaba pausado manualmente, intenta reanudar la reproducción.
+    if (!pausedManually) {
+      console.log("Intentando reanudar la reproducción automática al volver en línea.");
+      // Forzamos la recarga de la fuente de audio y la reproducción.
+      if (radioPlayer && radioPlayer.src) {
+        radioPlayer.load(); // Vuelve a cargar la fuente de medios
+        radioPlayer.play().catch(e => console.error("Fallo al reanudar la reproducción:", e));
+      }
+    }
+  });
+  window.addEventListener('offline', () => {
+    console.log("Conexión a red perdida.");
+    updateConnectionStatus();
+    // Pausa el reproductor inmediatamente al perder la conexión.
+    if (radioPlayer && !radioPlayer.paused) radioPlayer.pause();
+  });
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
       console.log("Página visible, forzando verificación.");
@@ -938,22 +1025,56 @@ function initializeApp() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Inicializa la UI y prepara todo, pero no reproduce audio.
-  initializeApp();
+  const hasUserInteractedBefore = localStorage.getItem(USER_INTERACTION_KEY) === 'true';
 
-  // El botón de la pantalla de carga se encargará de la primera reproducción.
-  if (preloaderButton) {
-    preloaderButton.addEventListener('click', () => {
-      // Ocultar la pantalla de carga
-      if (preloader) preloader.classList.add('hidden');
-      
-      // Forzar la reproducción. Esto cuenta como la primera interacción del usuario.
-      // La función playPause se encargará de poner isUserInteraction en true.
-      playPause();
-    }, { once: true }); // El evento solo se dispara una vez
+  const setupForPlayback = () => {
+    // Muestra el estado de "Cargando radio..."
+    if (preloader) preloader.classList.add('cargando');
+    // Inicializa la app (carga listas, prepara eventos, etc.)
+    initializeApp();
+  };
+
+  const initiateLoadingSequence = () => {
+    const preloaderMessage = document.getElementById('Precarga-Mensaje-B2-I');
+
+    // 1. Prepara la app y muestra "Cargando radio..."
+    setupForPlayback();
+
+    // 2. Inicia la reproducción de audio lo antes posible.
+    playPause();
+
+    // 3. Secuencia de mensajes en la pantalla de carga
+    // Fase 1: "Cargando radio..." durante 4 segundos.
+    setTimeout(() => {
+      // Fase 2: Muestra el nombre del programa actual por 3 segundos.
+      const programName = programNameElement.textContent || "Sintonizando...";
+      const stationName = stationNameElement.textContent || "Radio Online";
+      const fullMessage = `${stationName}<br>${programName}`;
+      if (preloaderMessage) {
+        preloaderMessage.innerHTML = fullMessage;
+      }
+
+      // Fase 3: Oculta la pantalla de carga después de los 3 segundos adicionales.
+      setTimeout(() => {
+        if (preloader) preloader.classList.add('hidden');
+      }, 3000); // 3 segundos
+    }, 4000); // 4 segundos
+  };
+
+  if (hasUserInteractedBefore) {
+    // --- VISITAS POSTERIORES ---
+    console.log("Usuario ya ha interactuado. Iniciando reproducción automática.");
+    initiateLoadingSequence();
   } else {
-    // Si no hay preloader, la app ya está inicializada pero esperará
-    // un clic en el botón de play principal.
-    if (preloader) preloader.classList.add('hidden');
+    // --- PRIMERA VISITA ---
+    console.log("Primera visita. Esperando interacción del usuario.");
+    if (preloader) preloader.classList.remove('cargando');
+
+    if (preloaderButton) {
+      preloaderButton.addEventListener('click', () => {
+        localStorage.setItem(USER_INTERACTION_KEY, 'true');
+        initiateLoadingSequence();
+      }, { once: true });
+    }
   }
 });
