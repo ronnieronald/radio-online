@@ -166,17 +166,16 @@ body {
 }
 
 /* --- ESTADOS DE PRECARGA --- */
-/* Por defecto, el mensaje está oculto y el botón visible */
-#Precarga-Mensaje-B2-I { display: none; }
-#Precarga-Boton-B3-I { display: block; }
+/* Por defecto (primera visita), solo se muestra el preloader inicial (botón). */
+#Precarga-Final { display: none; }
+#Precarga-Inicial { display: block; }
 
 /* Cuando la precarga está en modo 'cargando' (después del clic o en visitas posteriores) */
-#Precarga.cargando #Precarga-Mensaje-B2-I { display: block; }
-#Precarga.cargando #Precarga-Boton-B3-I { display: none; }
-
-/* Ocultar el icono de carga si no estamos en modo 'cargando' (solo se ve el botón inicial) */
-#Precarga:not(.cargando) #Precarga-Giratoria-B1-I { display: none; }
-
+/* Se oculta el preloader inicial y se muestra el final (spinner y mensaje). */
+#Precarga.cargando #Precarga-Inicial { display: none; }
+#Precarga.cargando #Precarga-Final {
+  display: flex; flex-direction: column; align-items: center; gap: 2rem;
+}
 
 #Precarga-Giratoria-B1-I {
   width: 80px;
