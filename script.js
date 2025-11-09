@@ -1024,51 +1024,50 @@ function initializeApp() {
   });
 }
 
+/**
+ * Inicia la secuencia visual de la pantalla de carga.
+ * Muestra "Cargando...", luego el programa, y finalmente se oculta.
+ */
+const initiateLoadingSequence = () => {
+  const preloaderMessage = document.getElementById('Precarga-Mensaje-B2-I');
+
+  // 1. Cambia la pantalla de carga a modo "cargando" (muestra spinner, oculta botón).
+  if (preloader) preloader.classList.add('cargando');
+
+  // 2. Secuencia de mensajes visuales.
+  setTimeout(() => {
+    const programName = programNameElement.textContent || "Sintonizando...";
+    const stationName = stationNameElement.textContent || "Radio Online";
+    const fullMessage = `${stationName}<br>${programName}`;
+    if (preloaderMessage) preloaderMessage.innerHTML = fullMessage;
+
+    setTimeout(() => {
+      if (preloader) preloader.classList.add('hidden');
+    }, 3000); // Ocultar después de 3s
+  }, 3000); // Mostrar programa después de 3s
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   const hasUserInteractedBefore = localStorage.getItem(USER_INTERACTION_KEY) === 'true';
-
-  // Esta función SOLO maneja la secuencia VISUAL de la pantalla de carga.
-  const initiateLoadingSequence = () => {
-    const preloaderMessage = document.getElementById('Precarga-Mensaje-B2-I');
-
-    // 1. Muestra el estado de "Cargando radio..."
-    if (preloader) preloader.classList.add('cargando');
-
-    // 2. Secuencia de mensajes en la pantalla de carga
-    // Fase 1: "Cargando radio..." durante 3 segundos.
-    setTimeout(() => {
-      // Fase 2: Muestra el nombre del programa actual por 3 segundos.
-      const programName = programNameElement.textContent || "Sintonizando...";
-      const stationName = stationNameElement.textContent || "Radio Online";
-      const fullMessage = `${stationName}<br>${programName}`;
-      if (preloaderMessage) preloaderMessage.innerHTML = fullMessage;
-
-      // Fase 3: Oculta la pantalla de carga después de los 3 segundos adicionales.
-      setTimeout(() => {
-        if (preloader) preloader.classList.add('hidden');
-      }, 3000); // 3 segundos
-    }, 3000); // 3 segundos
-  };
 
   if (hasUserInteractedBefore) {
     // --- VISITAS POSTERIORES ---
     console.log("Usuario ya ha interactuado. Iniciando reproducción automática.");
-    initializeApp(); // Prepara la app
-    playPause(); // Inicia la reproducción
+    initializeApp(); // 1. Inicializa la lógica de la app (eventos, listas, etc.)
+    playPause();     // 2. Inicia la reproducción de audio.
     initiateLoadingSequence();
   } else {
     // --- PRIMERA VISITA ---
     console.log("Primera visita. Esperando interacción del usuario.");
-    // Asegurarse de que solo el botón esté visible y nada más se ejecute.
+    // Aseguramos que la pantalla de carga NO esté en modo 'cargando'. Solo se verá el botón.
     if (preloader) preloader.classList.remove('cargando');
 
     if (preloaderButton) {
       preloaderButton.addEventListener('click', () => {
         localStorage.setItem(USER_INTERACTION_KEY, 'true');
-        // Al hacer clic, se inicializa todo:
-        initializeApp(); // 1. Prepara la app
-        playPause();     // 2. Inicia la reproducción (esta es la interacción clave)
-        // 3. Inicia la secuencia visual de carga.
+        // SOLO DESPUÉS DEL CLIC, se inicializa todo.
+        initializeApp(); // 1. Inicializa la lógica de la app.
+        playPause();     // 2. Inicia la reproducción (esta es la interacción clave).
         initiateLoadingSequence();
       }, { once: true });
     }
