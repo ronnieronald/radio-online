@@ -1066,8 +1066,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (preloaderButton) {
       preloaderButton.addEventListener('click', () => {
+        // 1. Guardar la interacción del usuario.
         localStorage.setItem(USER_INTERACTION_KEY, 'true');
-        // Inicia la secuencia de carga solo después del clic.
+        // 2. Llamar a playPause() directamente para que actúe como el botón de play principal.
+        //    Esto inicia la reproducción de audio inmediatamente.
+        playPause();
+        // 3. Iniciar la secuencia visual de carga después de que el audio ya está intentando reproducirse.
         initiateLoadingSequence();
       }, { once: true });
     }
