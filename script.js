@@ -1027,43 +1027,37 @@ function initializeApp() {
 document.addEventListener('DOMContentLoaded', () => {
   const hasUserInteractedBefore = localStorage.getItem(USER_INTERACTION_KEY) === 'true';
 
-  const setupForPlayback = () => {
-    // Muestra el estado de "Cargando radio..."
-    if (preloader) preloader.classList.add('cargando');
-    // Inicializa la app (carga listas, prepara eventos, etc.)
-    initializeApp();
-  };
-
   const initiateLoadingSequence = () => {
     const preloaderMessage = document.getElementById('Precarga-Mensaje-B2-I');
 
-    // 1. Prepara la app y muestra "Cargando radio..."
-    setupForPlayback();
+    // 1. Muestra el estado de "Cargando radio..." y prepara la app.
+    if (preloader) preloader.classList.add('cargando');
+    initializeApp();
 
     // 2. Inicia la reproducción de audio lo antes posible.
     playPause();
 
     // 3. Secuencia de mensajes en la pantalla de carga
-    // Fase 1: "Cargando radio..." durante 4 segundos.
+    // Fase 1: "Cargando radio..." durante 3 segundos.
     setTimeout(() => {
       // Fase 2: Muestra el nombre del programa actual por 3 segundos.
       const programName = programNameElement.textContent || "Sintonizando...";
       const stationName = stationNameElement.textContent || "Radio Online";
       const fullMessage = `${stationName}<br>${programName}`;
-      if (preloaderMessage) {
-        preloaderMessage.innerHTML = fullMessage;
-      }
+      if (preloaderMessage) preloaderMessage.innerHTML = fullMessage;
 
       // Fase 3: Oculta la pantalla de carga después de los 3 segundos adicionales.
       setTimeout(() => {
         if (preloader) preloader.classList.add('hidden');
       }, 3000); // 3 segundos
-    }, 4000); // 4 segundos
+    }, 3000); // 3 segundos
   };
 
   if (hasUserInteractedBefore) {
     // --- VISITAS POSTERIORES ---
     console.log("Usuario ya ha interactuado. Iniciando reproducción automática.");
+    // Aseguramos que la pantalla de carga esté en modo 'cargando' desde el inicio.
+    if (preloader) preloader.classList.add('cargando');
     initiateLoadingSequence();
   } else {
     // --- PRIMERA VISITA ---
@@ -1073,6 +1067,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (preloaderButton) {
       preloaderButton.addEventListener('click', () => {
         localStorage.setItem(USER_INTERACTION_KEY, 'true');
+        // Inicia la secuencia de carga solo después del clic.
         initiateLoadingSequence();
       }, { once: true });
     }
