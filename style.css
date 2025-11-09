@@ -611,9 +611,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  padding: 2rem 1.5rem 1rem 1.5rem;
+  padding-bottom: 1rem; /* Espacio debajo del título */
   margin-bottom: 1rem;
   border-bottom: 2px solid var(--color-border);
 }
