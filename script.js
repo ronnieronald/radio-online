@@ -464,11 +464,6 @@ const schedule = [
     days: [0],
   }
 ];
-
-// ======================================================
-// 📦 ELEMENTOS DEL DOM
-// ======================================================
-
 // --- Header ---
 const headerStatusIndicator = document.getElementById("Estado-de-Header-A6-I");
 const headerStatusText = document.getElementById("Estado-de-Texto-en-Header-A7-I");
@@ -492,6 +487,7 @@ const scheduleListContainer = document.getElementById("Lista-de-Horarios-del-Dia
 const dayMenuContainer = document.querySelector(".Contenedor-Lateral-Izquierdo-D2");
 const dayMenuOverlay = document.getElementById("dayMenuOverlay-D5-I");
 const dayMenuButton = document.getElementById("currentDayIndicator"); // Botón en barra móvil
+
 const dayMenuCloseButton = document.getElementById("dayMenuCloseButton"); // Botón de cierre del menú de día
 
 // --- Menú de Estaciones (Móvil) ---
