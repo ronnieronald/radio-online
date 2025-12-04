@@ -1,6 +1,3 @@
-// ======================================================
-
-// --- Sitios Web de las Estaciones ---
 const stationWebsites = {
   "Radio La Unción": "https://radiolauncion.com/",
   "Radio Vida": "https://radiovidacusco.com/",
@@ -766,33 +763,40 @@ function checkSchedule() {
   updateConnectionStatus();
 
   if (scheduled) {
-    // Si la estación programada es diferente a la actual, o si el reproductor no tiene fuente
-    if (radioPlayer.src !== scheduled.station.url) {
-      console.log(`Cambio de programa a: ${scheduled.programName}`);
-      updateStationInfo(scheduled.station, scheduled.programName);
-      updateMediaSession(scheduled.station, scheduled.programName);
-      // Solo reproducir automáticamente si el usuario ya ha interactuado
-      if (isUserInteraction) {
+    // Detectamos si cambió la estación (URL) o si cambió el nombre del programa
+    const stationChanged = !currentStation || currentStation.url !== scheduled.station.url;
+    const programChanged = programNameElement.textContent !== scheduled.programName;
+
+    // SIEMPRE actualizamos la información visual (nombre de estación + programa)
+    updateStationInfo(scheduled.station, scheduled.programName);
+    updateMediaSession(scheduled.station, scheduled.programName);
+
+    // Solo cambiamos el stream si la URL es realmente distinta
+    if (stationChanged) {
+      console.log(`Cambio de ESTACIÓN → ${scheduled.station.name}`);
+      if (isUserInteraction || !pausedManually) {
         playStation(scheduled.station);
       } else {
-        // Si no, solo preparar la URL para cuando el usuario haga clic
-        radioPlayer.src = scheduled.station.url;
+        radioPlayer.src = scheduled.station.url; // precarga por si pulsa play después
       }
     }
+    // Si es la misma estación pero programa distinto → al menos actualizamos metadata
+    else if (programChanged) {
+      console.log(`Mismo stream → nuevo programa: ${scheduled.programName}`);
+    }
+
     updateProgramProgress(scheduled);
+
   } else {
-    // No hay nada programado
+    // Fuera de horario
     updateStationInfo(null, "Fuera del aire");
     updateProgramProgress(null);
-    if (!radioPlayer.paused) {
-      radioPlayer.pause();
-    }
+    if (!radioPlayer.paused && !pausedManually) radioPlayer.pause();
   }
 
   updateNextEvent();
-  updateActiveProgramInList(); // <-- CAMBIO: Ya no reconstruimos, solo actualizamos la clase 'activo'.
+  updateActiveProgramInList();
 }
-
 // ======================================================
 // 📝 MANEJO DE MENÚS Y LISTAS
 // ======================================================
